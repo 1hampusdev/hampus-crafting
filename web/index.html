@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hampus Crafting</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Extra safeguard så UI aldrig syns innan JS säger till */
+        #app {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="hidden">
+        <div class="craft-container">
+            <div class="header">
+                <h1>Hampus Resources Crafting</h1>
+                <button id="closeBtn">×</button>
+            </div>
+
+            <div class="content">
+                <div class="left-panel">
+                    <h2>Recipes</h2>
+                    <div id="recipeList" class="recipe-list"></div>
+                </div>
+
+                <div class="right-panel">
+                    <div id="itemPreview" class="item-preview">
+                        <div class="item-image-wrapper">
+                            <img id="itemImage" src="" alt="">
+                        </div>
+                        <div class="item-info">
+                            <span id="itemCategory" class="badge">CATEGORY</span>
+                            <h2 id="itemLabel">Select a recipe</h2>
+                            <p id="itemDescription">Choose an item from the list to see details.</p>
+                        </div>
+                    </div>
+
+                    <div class="requirements">
+                        <h3>Required Materials</h3>
+                        <div id="requirementsList" class="requirements-list"></div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="cancelBtn" class="btn secondary">Cancel</button>
+                        <button id="craftBtn" class="btn primary" disabled>Craft Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
