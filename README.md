@@ -3,6 +3,7 @@ Hampus Crafting System
 📦 Requirements:
 - ox_lib
 - ox_inventory
+- scully_emotemenu
 
 📥 Optinal
 - ox_target
