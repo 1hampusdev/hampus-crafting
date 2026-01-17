@@ -1,6 +1,37 @@
 local showingBench = false
 local currentBench = nil
 
+local function buildUIRecipes()
+    local uiRecipes = {}
+
+    for _, recipe in ipairs(CraftingRecipes) do
+
+        local resultItem = recipe.result[1].item
+        local resultData = exports.ox_inventory:Items(resultItem)
+        local recipeLabel = resultData and resultData.label or recipe.id
+
+        local ingredients = {}
+        for _, ing in ipairs(recipe.ingredients) do
+            local ingData = exports.ox_inventory:Items(ing.item)
+            ingredients[#ingredients+1] = {
+                item = ing.item,
+                count = ing.count,
+                label = ingData and ingData.label or ing.item
+            }
+        end
+
+        uiRecipes[#uiRecipes+1] = {
+            id = recipe.id,
+            label = recipeLabel,
+            ingredients = ingredients,
+            category = recipe.category,
+            duration = recipe.duration,
+            result = recipe.result
+        }
+    end
+
+    return uiRecipes
+end
 
 local function playCraftingAnim()
     exports['scully_emotemenu']:playEmoteByCommand("mechanic2")
@@ -9,7 +40,6 @@ end
 local function stopCraftingAnim()
     exports['scully_emotemenu']:cancelEmote()
 end
-
 
 local function spawnBenchProp(bench)
     local model = joaat(bench.prop)
@@ -26,26 +56,24 @@ local function spawnBenchProp(bench)
     bench.entity = obj
 end
 
-
 local function setupTarget(bench)
     exports.ox_target:addLocalEntity(bench.entity, {
         {
             name = 'hampus_crafting_bench_' .. bench.coords.x,
-            label = 'Open Carfting Bench',
+            label = 'Open Crafting Bench',
             icon = 'fa-solid fa-hammer',
             onSelect = function()
                 currentBench = bench
                 SetNuiFocus(true, true)
                 SendNUIMessage({
                     action = 'open',
-                    recipes = CraftingRecipes,
+                    recipes = buildUIRecipes(),
                     categories = Config.Categories
                 })
             end
         }
     })
 end
-
 
 local function draw3DText(coords, text)
     local onScreen, _x, _y = World3dToScreen2d(coords.x, coords.y, coords.z)
@@ -60,7 +88,6 @@ local function draw3DText(coords, text)
     AddTextComponentString(text)
     DrawText(_x, _y)
 end
-
 
 CreateThread(function()
     SetNuiFocus(false, false)
@@ -83,13 +110,13 @@ CreateThread(function()
                 local dist = #(pCoords - bench.coords)
                 if dist < 2.0 then
                     sleep = 0
-                    draw3DText(bench.coords + vec3(0, 0, 1.0), '[E] Öppna arbetsbänk')
+                    draw3DText(bench.coords + vec3(0, 0, 1.0), '[E] Open Crafting Bench')
                     if IsControlJustPressed(0, Config.InteractKey) then
                         currentBench = bench
                         SetNuiFocus(true, true)
                         SendNUIMessage({
                             action = 'open',
-                            recipes = CraftingRecipes,
+                            recipes = buildUIRecipes(),
                             categories = Config.Categories
                         })
                     end
@@ -100,7 +127,6 @@ CreateThread(function()
         end
     end
 end)
-
 
 RegisterNUICallback('close', function(_, cb)
     SetNuiFocus(false, false)
@@ -133,14 +159,16 @@ RegisterNUICallback('craftItem', function(data, cb)
     SendNUIMessage({ action = 'close' })
 
     Wait(150)
-
     playCraftingAnim()
-
     Wait(150)
+
+    local resultItem = recipe.result[1].item
+    local resultData = exports.ox_inventory:Items(resultItem)
+    local itemLabel = resultData and resultData.label or recipe.id
 
     local success = lib.progressCircle({
         duration = duration,
-        label = 'Crafting ' .. (recipe.label or recipe.id),
+        label = 'Crafting ' .. itemLabel,
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
