@@ -96,7 +96,7 @@ function selectRecipe(id) {
 
         const name = document.createElement('span');
         name.classList.add('requirement-name');
-        name.textContent = ing.item;
+        name.textContent = ing.label || ing.item;
 
         const amount = document.createElement('span');
         amount.classList.add('requirement-amount');
